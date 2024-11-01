@@ -5,13 +5,16 @@ import {
     showUserPost,
     updatePost,
     fetchPosts,
-    deletePost
+    deletePost,
+    searchPost
 } from '../Controller/PostController.js';
 
 
 const router = Router();
 
 router.get('/', fetchPosts);
+
+router.get('/search', searchPost);
 
 router.get('/:id', showUserPost);
 

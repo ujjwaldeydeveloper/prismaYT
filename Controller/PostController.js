@@ -19,7 +19,13 @@ export const fetchPosts = async (req, res) => {
         orderBy:
         {
             id: 'desc'
-        }
+        },
+        //
+        // where: {
+        //     comment_count: {
+        //         gt: 0
+        //     }
+        // }
     });
 
     return res.json({status: 200, data: posts});
@@ -186,4 +192,29 @@ export const deletePost = async (req, res) => {
     } catch (error) {
         return res.status(500).json({status: 500, message: "Internal Server Error", error: error.message});
     }
+}
+
+// * Search for a post
+
+export const searchPost = async (req, res) => {
+    const {q} = req.query;
+
+    const posts = await prisma.post.findMany({
+        where: {
+            OR: [
+                {
+                    title: {
+                        search: q
+                    }
+                },
+                {
+                    description: {
+                        search: q
+                    }
+                }
+            ]
+        }
+    });
+
+    return res.json({status: 200, data: posts});
 }
