@@ -2,8 +2,23 @@ import prisma from "../DB/db.config.js";
 
 
 export const fetchPosts = async (req, res) => {
+   // add pagination
 
+   const page = Number(req.query.page) || 1;
+   const limit = Number(req.query.limit) || 10;
+
+   if(page <=  0) {
+        page = 1;
+   }
+
+   if(limit <= 0 || limit > 100) {
+    limit = 10;
+   }
+
+   const skip = (page - 1) * limit;
     const posts = await prisma.post.findMany({
+        skip: skip,
+        take: limit,
         include: {
             comment: {
                 include: 
@@ -28,7 +43,20 @@ export const fetchPosts = async (req, res) => {
         // }
     });
 
-    return res.json({status: 200, data: posts});
+    // * to get the the count of the post
+    const totalPosts = await prisma.post.count();
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    return res.json({
+        status: 200, 
+        data: posts, 
+        meta : {
+            totalPosts: totalPosts,
+            totalPages: totalPages,
+            currentPage: page,
+            limit: limit,
+        },
+    });
 }
 
 // * Create a new Post
