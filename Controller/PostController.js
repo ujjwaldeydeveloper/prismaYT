@@ -3,9 +3,9 @@ import prisma from "../DB/db.config.js";
 
 export const fetchPosts = async (req, res) => {
 
-    const users = await prisma.post.findMany();
+    const posts = await prisma.post.findMany();
 
-    return res.json({status: 200, data: users});
+    return res.json({status: 200, data: posts});
 }
 
 // * Create a new Post
